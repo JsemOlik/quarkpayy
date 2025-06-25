@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/composables/useInitials';
 import type { User } from '@/types';
 import { computed } from 'vue';
+import md5 from 'blueimp-md5';
 
 interface Props {
     user: User;
@@ -17,11 +18,24 @@ const { getInitials } = useInitials();
 
 // Compute whether we should show the avatar image
 const showAvatar = computed(() => props.user.avatar && props.user.avatar !== '');
+
+// Compute the Gravatar Wavatar URL
+const gravatarUrl = computed(() => {
+    const email = props.user.email?.trim().toLowerCase() || '';
+    const hash = md5(email);
+    return `https://www.gravatar.com/avatar/${hash}?d=wavatar`;
+});
+
+// Compute the avatar image to use: user avatar or gravatar
+const avatarSrc = computed(() => {
+    if (showAvatar.value) return props.user.avatar || '';
+    return gravatarUrl.value;
+});
 </script>
 
 <template>
     <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-        <AvatarImage v-if="showAvatar" :src="user.avatar!" :alt="user.name" />
+        <AvatarImage :src="avatarSrc" :alt="user.name" @error="$event.target.style.display = 'none'" />
         <AvatarFallback class="rounded-lg text-black dark:text-white">
             {{ getInitials(user.name) }}
         </AvatarFallback>

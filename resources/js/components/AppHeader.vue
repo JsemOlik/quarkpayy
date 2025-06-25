@@ -14,6 +14,7 @@ import type { BreadcrumbItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search, LockKeyhole } from 'lucide-vue-next';
 import { computed } from 'vue';
+import md5 from 'blueimp-md5';
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -27,6 +28,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
+
+// Compute whether we should show the avatar image
+const showAvatar = computed(() => auth.value.user.avatar && auth.value.user.avatar !== '');
+
+// Compute the Gravatar Wavatar URL
+const gravatarUrl = computed(() => {
+    const email = auth.value.user.email?.trim().toLowerCase() || '';
+    const hash = md5(email);
+    return `https://www.gravatar.com/avatar/${hash}?d=wavatar`;
+});
+
+// Compute the avatar image to use: user avatar or gravatar
+const avatarSrc = computed(() => {
+    if (showAvatar.value) return auth.value.user.avatar || '';
+    return gravatarUrl.value;
+});
 
 const isCurrentRoute = computed(() => (url: string) => page.url === url);
 
@@ -170,7 +187,7 @@ const rightNavItems: NavItem[] = [
                                 class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
                             >
                                 <Avatar class="size-8 overflow-hidden rounded-full">
-                                    <AvatarImage v-if="auth.user.avatar" :src="auth.user.avatar" :alt="auth.user.name" />
+                                    <AvatarImage :src="avatarSrc" :alt="auth.user.name" @error="$event.target.style.display = 'none'" />
                                     <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
                                         {{ getInitials(auth.user?.name) }}
                                     </AvatarFallback>

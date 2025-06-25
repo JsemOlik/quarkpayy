@@ -1,0 +1,66 @@
+<template>
+    <div
+        class="bg-white dark:bg-neutral-900 rounded-lg shadow-sm border border-neutral-200 dark:border-neutral-700 mb-8">
+        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
+            <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Status Serverů</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-neutral-200 dark:divide-neutral-700">
+                <thead class="bg-neutral-50 dark:bg-neutral-900">
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
+                            Server</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
+                            Status</th>
+                        <th
+                            class="px-6 py-3 text-left text-xs font-medium text-neutral-500 dark:text-neutral-300 uppercase tracking-wider">
+                            Node</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white dark:bg-neutral-900 divide-y divide-neutral-200 dark:divide-neutral-700">
+                    <tr v-for="node in props.nodes" :key="node.id || node.name" class="hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-neutral-900 dark:text-white">{{ node.name }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span v-if="!node.suspended"
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                <svg class="w-2 h-2 mr-1.5" fill="currentColor" viewBox="0 0 8 8">
+                                    <circle cx="4" cy="4" r="3" />
+                                </svg>
+                                Live
+                            </span>
+                            <span v-else
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                <svg class="w-2 h-2 mr-1.5" fill="currentColor" viewBox="0 0 8 8">
+                                    <circle cx="4" cy="4" r="3" />
+                                </svg>
+                                Suspended
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white">{{ node.node || 'Unknown' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { defineProps } from 'vue'
+
+const props = defineProps<{
+    nodes: Array<{
+        id: number|string
+        name: string
+        suspended: boolean
+        node?: string|null
+    }>
+}>()
+</script>
+
+<style scoped>
+/* Optional styling */
+</style>

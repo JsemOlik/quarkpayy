@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'pterodactyl' => [
+        'url' => env('PTERODACTYL_API_URL'),
+        'key' => env('PTERODACTYL_API_KEY'),
+    ],
+
 ];
