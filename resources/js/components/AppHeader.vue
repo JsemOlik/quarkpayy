@@ -61,7 +61,7 @@ const rightNavItems: NavItem[] = [
         <div
             :class="[
                 'border-b border-sidebar-border/80',
-                props.floating && 'rounded-xl shadow-lg bg-neutral-900/90 backdrop-blur mx-auto mt-4 max-w-[1152px] z-30 border border-neutral-800',
+                props.floating && 'rounded-xl shadow-lg bg-white/90 dark:bg-neutral-900/90 backdrop-blur mx-auto mt-4 max-w-[1152px] z-30 border border-neutral-200 dark:border-neutral-800',
             ]"
             style="transition: box-shadow 0.2s, background 0.2s;"
         >

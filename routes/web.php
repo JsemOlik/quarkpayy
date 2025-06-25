@@ -24,5 +24,5 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     })->name('admin.invoices');
 });
 
-require __DIR__.'/settings.php';
+require __DIR__.'/account.php';
 require __DIR__.'/auth.php';
