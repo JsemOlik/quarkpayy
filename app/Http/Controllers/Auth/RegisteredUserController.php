@@ -36,16 +36,24 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Check if this is the first user
+        $isFirstUser = User::count() === 0;
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'is_admin' => User::count() === 0 ? true : false,
+            'role' => $isFirstUser ? 'admin' : 'user',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
+
+        // If this is the first user (admin), redirect them to the admin dashboard
+        if ($isFirstUser) {
+            return to_route('admin.dashboard');
+        }
 
         return to_route('dashboard');
     }

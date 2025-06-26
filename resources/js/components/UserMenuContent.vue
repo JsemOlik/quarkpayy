@@ -4,6 +4,7 @@ import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSep
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings, LockKeyhole } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface Props {
     user: User;
@@ -13,7 +14,11 @@ const handleLogout = () => {
     router.flushAll();
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const canAccessAdminPanel = computed(() => {
+    return ['admin', 'support'].includes(props.user.role || '');
+});
 </script>
 
 <template>
@@ -24,7 +29,7 @@ defineProps<Props>();
     </DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
-        <template v-if="user.is_admin">
+        <template v-if="canAccessAdminPanel">
             <DropdownMenuItem :as-child="true">
                 <Link class="block w-full" :href="route('admin.dashboard')" prefetch as="button">
                     <LockKeyhole class="mr-2 h-4 w-4" />

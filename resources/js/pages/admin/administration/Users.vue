@@ -30,21 +30,37 @@
                             <li v-for="user in sortedUsers" :key="user.id" @click="openUserPanel(user)"
                                 class="flex items-center gap-4 px-6 py-4 cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all border-b border-neutral-100 dark:border-neutral-700 last:border-b-0">
                                 <div class="w-12 h-12">
-                                    <img :src="`https://mc-heads.net/avatar/${encodeURIComponent(user.name)}/40`" :alt="user.name" class="w-full h-full object-cover rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                                    <img :src="gravatarUrl(user.email, 80)" :alt="user.name" class="w-full h-full object-cover rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2">
                                         <span class="font-semibold text-neutral-900 dark:text-white text-lg">{{ user.name }}</span>
-                                        <span :class="user.role === 'admin' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'" class="px-2 py-1 text-xs font-medium rounded-full">
-                                            {{ user.role === 'admin' ? 'Admin' : 'Hráč' }}
+                                        <span
+                                          :class="
+                                            user.role === 'admin'
+                                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                                              : user.role === 'support'
+                                              ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                                              : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'"
+                                          class="px-2 py-1 text-xs font-medium rounded-full"
+                                        >
+                                          {{
+                                            user.role === 'admin'
+                                              ? 'Admin'
+                                              : user.role === 'support'
+                                              ? 'Support Agent'
+                                              : 'Uživatel'
+                                          }}
                                         </span>
                                     </div>
                                     <div class="text-sm text-neutral-500 dark:text-neutral-300 truncate">{{ user.email }}</div>
-                                    <div class="text-xs text-neutral-400 dark:text-neutral-500 mt-1">Login kód: <span class="font-mono blur-until-hover">{{ user.code || '—' }}</span></div>
                                 </div>
                                 <div class="text-xs text-neutral-400 dark:text-neutral-500 text-right min-w-[100px]">
                                     Registrován: <span class="font-medium text-neutral-700 dark:text-neutral-200">{{ user.created_at }}</span>
                                 </div>
+                                <Link :href="`/admin/users/${user.id}/edit`" @click.stop class="ml-4 text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Upravit uživatele">
+                                    <Pencil class="w-5 h-5" />
+                                </Link>
                                 <svg class="w-5 h-5 text-neutral-300 dark:text-neutral-500 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                             </li>
                         </ul>
@@ -58,14 +74,34 @@
                     <div class="relative ml-auto w-full max-w-md bg-white dark:bg-neutral-900 h-full shadow-2xl animate-in slide-in-from-right duration-200 flex flex-col">
                         <div class="px-8 py-8 border-b border-neutral-200 dark:border-neutral-700 flex flex-col items-center">
                             <div class="w-24 h-24 mb-4">
-                                <img :src="selectedUser ? `https://mc-heads.net/avatar/${encodeURIComponent(selectedUser.name)}/100` : ''" :alt="selectedUser?.name" class="w-full h-full object-cover rounded-lg bg-neutral-200 dark:bg-neutral-700" />
+                                <img :src="selectedUser ? gravatarUrl(selectedUser.email, 200) : ''" :alt="selectedUser?.name" class="w-full h-full object-cover rounded-lg bg-neutral-200 dark:bg-neutral-700" />
                             </div>
                             <h2 class="text-2xl font-bold text-neutral-900 dark:text-white mb-1">{{ selectedUser?.name }}</h2>
                             <div class="text-sm text-neutral-500 dark:text-neutral-300 mb-2">{{ selectedUser?.email }}</div>
-                            <div class="text-xs text-neutral-400 dark:text-neutral-500 mb-2">Login kód: <span class="font-mono user-panel-blur" style="filter: blur(0.25em); transition: filter 0.2s; cursor: pointer;" @mouseover="(e: Event) => (e.target as HTMLElement).style.filter = 'none'" @mouseleave="(e: Event) => (e.target as HTMLElement).style.filter = 'blur(0.25em)'">{{ selectedUser?.code || '—' }}</span></div>
-                            <span :class="selectedUser?.role === 'admin' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'" class="px-2 py-1 text-xs font-medium rounded-full mb-2">
-                                {{ selectedUser?.role === 'admin' ? 'Admin' : 'Hráč' }}
-                            </span>
+                            <div class="flex flex-col items-center gap-2 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span
+                                      :class="
+                                        selectedUser?.role === 'admin'
+                                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                                          : selectedUser?.role === 'support'
+                                          ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                                          : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'"
+                                      class="px-2 py-1 text-xs font-medium rounded-full"
+                                    >
+                                      {{
+                                        selectedUser?.role === 'admin'
+                                          ? 'Admin'
+                                          : selectedUser?.role === 'support'
+                                          ? 'Support Agent'
+                                          : 'Uživatel'
+                                      }}
+                                    </span>
+                                    <span :class="selectedUser?.email_verified_at ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'" class="px-2 py-1 text-xs font-medium rounded-full">
+                                        {{ selectedUser?.email_verified_at ? 'Email ověřen' : 'Email neověřen' }}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                         <div class="flex-1 overflow-y-auto px-8 py-6 space-y-6">
                             <!-- Dummy Stats -->
@@ -85,9 +121,8 @@
                             </div>
                             <!-- Actions -->
                             <div class="space-y-4">
-                                <Button class="w-full" @click="openCodeModal(selectedUser)">Změnit Login Kód</Button>
-                                <Button class="w-full" @click="openRoleModal(selectedUser)">Změnit roli</Button>
-                                <Button class="w-full" variant="destructive" @click="openDeleteModal(selectedUser)">Smazat uživatele</Button>
+                                <Button class="w-full" @click="selectedUser && openRoleModal(selectedUser)">Změnit roli</Button>
+                                <Button class="w-full" variant="destructive" @click="selectedUser && openDeleteModal(selectedUser)">Smazat uživatele</Button>
                             </div>
                         </div>
                         <div class="px-8 py-4 border-t border-neutral-200 dark:border-neutral-700 flex justify-end">
@@ -96,26 +131,6 @@
                     </div>
                 </div>
                 </transition>
-
-                <!-- Code Modal (replaces Password Modal) -->
-                <div v-if="showCodeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
-                    <div class="bg-white dark:bg-neutral-800 rounded-lg max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
-                        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-                            <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Změnit Login Kód pro {{ selectedUser?.name }}</h3>
-                        </div>
-                        <div class="p-6 space-y-4">
-                            <div>
-                                <Label for="new_code">Nový Login Kód</Label>
-                                <Input id="new_code" v-model="codeForm.code" type="text" placeholder="Nový Login Kód" />
-                                <InputError :message="codeForm.error" />
-                            </div>
-                        </div>
-                        <div class="px-6 py-4 border-t border-neutral-200 dark:border-neutral-700 flex justify-end space-x-3">
-                            <Button @click="closeCodeModal" variant="outline">Zrušit</Button>
-                            <Button @click="changeCode" :disabled="codeForm.processing">Uložit</Button>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Delete Confirmation Modal -->
                 <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
@@ -141,10 +156,11 @@
                         </div>
                         <div class="p-6 space-y-4">
                             <div>
-                                <Label for="role">Role</Label>
+                                <Label for="role" class="mb-2">Role</Label>
                                 <select id="role" v-model="roleForm.role" class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2">
-                                    <option value="player">Hráč</option>
                                     <option value="admin">Admin</option>
+                                    <option value="support">Support Agent</option>
+                                    <option value="user">Uživatel</option>
                                 </select>
                             </div>
                         </div>
@@ -161,7 +177,7 @@
 
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
 import { type BreadcrumbItem, type User } from '@/types';
 import Input from '@/components/ui/input/Input.vue';
@@ -170,6 +186,8 @@ import Button from '@/components/ui/button/Button.vue';
 import InputError from '@/components/InputError.vue';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import axios from 'axios';
+import md5 from 'md5';
+import { Pencil } from 'lucide-vue-next';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Dashboard', href: '/dashboard' },
@@ -183,43 +201,36 @@ const props = defineProps<{ users?: User[] }>();
 const dummyUsers: User[] = [
     {
         id: 1,
-        name: 'AdminUser',
+        name: 'John Admin',
         email: 'admin@example.com',
         created_at: '2024-01-15',
         updated_at: '2024-01-20',
         email_verified_at: '2024-01-15',
-        is_admin: true,
         role: 'admin',
-        code: 'ADMIN123'
     },
     {
         id: 2,
-        name: 'PlayerOne',
-        email: 'player1@example.com',
+        name: 'Jane Support',
+        email: 'support@example.com',
         created_at: '2024-02-10',
         updated_at: '2024-02-15',
         email_verified_at: '2024-02-10',
-        is_admin: false,
-        role: 'player',
-        code: 'PLAYER456'
+        role: 'support',
     },
     {
         id: 3,
-        name: 'TestUser',
+        name: 'Test User',
         email: 'test@example.com',
         created_at: '2024-03-05',
         updated_at: '2024-03-10',
-        email_verified_at: '2024-03-05',
-        is_admin: false,
-        role: 'player',
-        code: 'TEST789'
+        email_verified_at: null,
+        role: 'user',
     }
 ];
 
 const users = ref((props.users ?? dummyUsers).map(user => ({
     ...user,
-    role: user.role || (user.is_admin ? 'admin' : 'player'),
-    code: user.code || 'N/A',
+    role: user.role ?? 'user',
     stats: {
         ticketsCreated: Math.floor(Math.random() * 100),
         lastLogin: user.updated_at ? user.updated_at.substring(0, 10) : 'N/A',
@@ -243,76 +254,49 @@ const sortedUsers = computed(() => {
 });
 
 const showUserPanel = ref(false);
-const selectedUser = ref<any | null>(null);
+const selectedUser = ref<(User & { stats: { ticketsCreated: number; lastLogin: string } }) | null>(null);
+const showDeleteModal = ref(false);
+const showRoleModal = ref(false);
 
-function openUserPanel(user: any) {
+const deleteForm = ref({
+    processing: false,
+});
+
+const roleForm = ref({
+    role: 'user',
+});
+
+function gravatarUrl(email: string, size = 100) {
+    const hash = md5(email.trim().toLowerCase());
+    return `https://www.gravatar.com/avatar/${hash}?s=${size}&d=wavatar`;
+}
+
+function openUserPanel(user: User & { stats: { ticketsCreated: number; lastLogin: string } }) {
     selectedUser.value = user;
     showUserPanel.value = true;
 }
+
 function closeUserPanel() {
     showUserPanel.value = false;
     selectedUser.value = null;
 }
 
-const showCodeModal = ref(false);
-const showDeleteModal = ref(false);
-
-const codeForm = ref({
-    code: '',
-    error: '',
-    processing: false,
-});
-const deleteForm = ref({
-    processing: false,
-});
-
-function openCodeModal(user: any) {
-    selectedUser.value = user;
-    codeForm.value = { code: '', error: '', processing: false };
-    showCodeModal.value = true;
-}
-function closeCodeModal() {
-    showCodeModal.value = false;
-}
-async function changeCode() {
-    codeForm.value.processing = true;
-    codeForm.value.error = '';
-    if (!codeForm.value.code) {
-        codeForm.value.error = 'Login kód nesmí být prázdný.';
-        codeForm.value.processing = false;
-        return;
-    }
-    try {
-        const res = await axios.post(`/users/${selectedUser.value.id}/change-code`, {
-            code: codeForm.value.code,
-        });
-        // Update the user's code in the local list only if backend succeeded
-        const idx = users.value.findIndex(u => u.id === selectedUser.value?.id);
-        if (idx !== -1 && res.data && res.data.code) {
-            (users.value[idx] as any).code = res.data.code;
-            if (selectedUser.value) (selectedUser.value as any).code = res.data.code;
-        }
-        showCodeModal.value = false;
-    } catch (e) {
-        codeForm.value.error = 'Chyba při změně login kódu.';
-    } finally {
-        codeForm.value.processing = false;
-    }
-}
-
-function openDeleteModal(user: any) {
+function openDeleteModal(user: User & { stats: { ticketsCreated: number; lastLogin: string } }) {
+    if (!user) return;
     selectedUser.value = user;
     showDeleteModal.value = true;
 }
+
 function closeDeleteModal() {
     showDeleteModal.value = false;
 }
+
 async function deleteUser() {
     deleteForm.value.processing = true;
     try {
-        await axios.delete(`/users/${selectedUser.value.id}`);
+        await axios.delete(`/users/${selectedUser.value?.id}`);
         // Remove user from local list
-        users.value = users.value.filter(u => u.id !== selectedUser.value.id);
+        users.value = users.value.filter(u => u.id !== selectedUser.value?.id);
         closeDeleteModal();
         closeUserPanel();
     } catch (e) {
@@ -322,20 +306,17 @@ async function deleteUser() {
     }
 }
 
-const showRoleModal = ref(false);
-
-const roleForm = ref({
-    role: 'player',
-});
-
-function openRoleModal(user: any) {
+function openRoleModal(user: User & { stats: { ticketsCreated: number; lastLogin: string } }) {
+    if (!user) return;
     selectedUser.value = user;
-    roleForm.value.role = (user.role as string) || 'player';
+    roleForm.value.role = user.role ?? 'user';
     showRoleModal.value = true;
 }
+
 function closeRoleModal() {
     showRoleModal.value = false;
 }
+
 async function changeRole() {
     if (!selectedUser.value) return;
     try {
@@ -345,7 +326,7 @@ async function changeRole() {
         // Update the user's role in the local list only if backend succeeded
         const idx = users.value.findIndex(u => u.id === selectedUser.value?.id);
         if (idx !== -1 && res.data && res.data.role) {
-            (users.value[idx] as any).role = res.data.role;
+            users.value[idx].role = res.data.role;
         }
         showRoleModal.value = false;
     } catch (e) {
@@ -391,3 +372,4 @@ async function changeRole() {
   filter: none;
 }
 </style>
+

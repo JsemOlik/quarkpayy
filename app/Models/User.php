@@ -21,7 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'is_admin',
+        'role',
     ];
 
     /**
@@ -44,7 +44,14 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Check if the user can access the admin panel.
+     */
+    public function canAccessAdminPanel(): bool
+    {
+        return in_array($this->role, ['admin', 'support']);
     }
 }

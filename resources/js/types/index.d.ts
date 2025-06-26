@@ -33,9 +33,11 @@ export interface User {
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
-    is_admin?: boolean;
-    role?: string;
-    code?: string;
+    role?: 'admin' | 'support' | 'user';
+    stats?: {
+        ticketsCreated: number;
+        lastLogin: string;
+    };
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
