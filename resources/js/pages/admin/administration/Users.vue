@@ -15,7 +15,8 @@
 
                 <!-- Users List -->
                 <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700 flex justify-between items-center">
+                    <!-- Sorting/Filter Controls -->
+                    <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                         <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">Seznam uživatelů</h2>
                         <div class="flex items-center gap-2">
                             <span class="text-xs text-neutral-500 dark:text-neutral-400 mr-2">Řazení:</span>
@@ -55,13 +56,13 @@
                                     </div>
                                     <div class="text-sm text-neutral-500 dark:text-neutral-300 truncate">{{ user.email }}</div>
                                 </div>
-                                <div class="text-xs text-neutral-400 dark:text-neutral-500 text-right min-w-[100px]">
+                                <div class="text-xs text-neutral-400 dark:text-neutral-500 text-right min-w-[100px] hidden sm:block">
                                     Registrován: <span class="font-medium text-neutral-700 dark:text-neutral-200">{{ user.created_at }}</span>
                                 </div>
                                 <Link :href="`/admin/users/${user.id}/edit`" @click.stop class="ml-4 text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Upravit uživatele">
                                     <Pencil class="w-5 h-5" />
                                 </Link>
-                                <svg class="w-5 h-5 text-neutral-300 dark:text-neutral-500 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                <!-- <svg class="w-5 h-5 text-neutral-300 dark:text-neutral-500 ml-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg> -->
                             </li>
                         </ul>
                     </div>

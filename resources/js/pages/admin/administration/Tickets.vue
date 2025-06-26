@@ -1,7 +1,7 @@
 <template>
 
     <Head title="Tickety" />
-    <AppLayout :breadcrumbs="breadcrumbs">
+    <AppLayout :breadcrumbs="breadcrumbs" variant="sidebar">
         <div class="min-h-screen bg-neutral-50 dark:bg-transparent">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <!-- Header Section -->
@@ -196,7 +196,7 @@
                                         {{ ticket.subject }}</td>
                                     <td
                                         class="px-4 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-white hidden md:table-cell">
-                                        {{ ticket.username }}
+                                        {{ ticket.user?.name }}
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap">
                                         <span :class="getStatusClass(ticket.status)"
@@ -219,10 +219,10 @@
                                         {{ ticket.created }}
                                     </td>
                                     <td class="px-4 py-4 whitespace-nowrap text-sm">
-                                        <button @click="$inertia.visit(`/tickets/${ticket.id}`)"
+                                        <Link :href="route('admin.tickets.show', ticket.id)"
                                             class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                             Otevřít
-                                        </button>
+                                        </Link>
                                     </td>
                                     <td class="px-4 py-4">
                                         <input type="checkbox" :value="ticket.id" v-model="selectedTickets">
@@ -236,33 +236,7 @@
                     <div
                         class="px-6 py-4 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
                         <div class="text-sm text-neutral-600 dark:text-neutral-300">
-                            Zobrazeno {{ tickets.value?.from || 0 }} - {{ tickets.value?.to || 0 }} z {{ tickets.value?.total || 0 }} tickets
-                        </div>
-                        <div class="flex space-x-2">
-                            <button 
-                                :disabled="!tickets.value?.prev_page_url"
-                                @click="$inertia.visit(tickets.value?.prev_page_url || '')"
-                                class="px-3 py-1 border border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50">
-                                Předchozí
-                            </button>
-                            <button 
-                                v-for="page in tickets.value?.links?.slice(1, -1)" 
-                                :key="page.label"
-                                :class="[
-                                    'px-3 py-1 rounded text-sm',
-                                    page.active 
-                                        ? 'bg-blue-600 text-white' 
-                                        : 'border border-neutral-300 dark:border-neutral-600 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700'
-                                ]"
-                                @click="$inertia.visit(page.url)">
-                                {{ page.label }}
-                            </button>
-                            <button 
-                                :disabled="!tickets.value?.next_page_url"
-                                @click="$inertia.visit(tickets.value?.next_page_url || '')"
-                                class="px-3 py-1 border border-neutral-300 dark:border-neutral-600 rounded text-sm text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50">
-                                Další
-                            </button>
+                            Zobrazeno 1 - {{ tickets.length }} z {{ tickets.length }} tickets
                         </div>
                     </div>
                 </div>
@@ -275,48 +249,40 @@
                 <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
                     <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">Vytvořit nový ticket</h3>
                 </div>
-
                 <div class="p-6 space-y-4">
                     <div>
-                        <label
-                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Předmět</label>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Předmět</label>
                         <input v-model="newTicket.subject" type="text"
                             class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2">
                     </div>
-
                     <div v-if="userRole === 'admin'">
-                        <label
-                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Uživatel</label>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Uživatel</label>
                         <input v-model="newTicket.user" type="text"
                             class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2">
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label
-                                class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Priorita</label>
-                            <select v-model="newTicket.priority"
-                                class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2">
-                                <option value="low">Nízká</option>
-                                <option value="medium">Střední</option>
-                                <option value="high">Vysoká</option>
-                                <option value="urgent">Urgentní</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label
-                                class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Kategorie</label>
-                            <select v-model="newTicket.category"
-                                class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2">
-                                <option value="technical">Technické</option>
-                                <option value="gameplay">Gameplay</option>
-                                <option value="player_report">Nahlášení hráče</option>
-                                <option value="other">Ostatní</option>
-                            </select>
+                        <div v-if="newTicketForm.errors.user" class="text-red-600 text-sm mt-1">
+                            {{ newTicketForm.errors.user }}
                         </div>
                     </div>
-
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Priorita</label>
+                        <select v-model="newTicket.priority"
+                            class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2">
+                            <option value="low">Nízká</option>
+                            <option value="medium">Střední</option>
+                            <option value="high">Vysoká</option>
+                            <option value="urgent">Urgentní</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Kategorie</label>
+                        <select v-model="newTicket.category"
+                            class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2">
+                            <option value="technical">Technické</option>
+                            <option value="gameplay">Gameplay</option>
+                            <option value="player_report">Nahlášení hráče</option>
+                            <option value="other">Ostatní</option>
+                        </select>
+                    </div>
                     <div v-if="userRole === 'admin' || newTicket.participants.length > 0" class="space-y-3">
                         <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300">Účastníci</label>
                         <div v-for="(participant, index) in newTicket.participants" :key="index" class="flex gap-2">
@@ -335,15 +301,12 @@
                             + Přidat dalšího účastníka
                         </button>
                     </div>
-
                     <div>
-                        <label
-                            class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Popis</label>
+                        <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Popis</label>
                         <textarea v-model="newTicket.description" rows="4"
                             class="w-full rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white px-3 py-2"></textarea>
                     </div>
                 </div>
-
                 <div class="px-6 py-4 border-t border-neutral-200 dark:border-neutral-700 flex justify-end space-x-3">
                     <button @click="showCreateModal = false"
                         class="px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-200 transform hover:scale-105 active:scale-95">
@@ -395,13 +358,15 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import { ref, computed, onMounted, defineProps } from 'vue';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 
-const breadcrumbs: BreadcrumbItem[] = [
+const props = defineProps<{ tickets: any[], userRole: string }>();
+
+const breadcrumbs = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Tickets', href: '/tickets' },
+    { title: 'Tickets', href: '/admin/tickets' },
 ];
 
 const showCreateModal = ref(false);
@@ -412,124 +377,101 @@ const selectedPriority = ref('');
 const selectedCategory = ref('');
 const searchTerm = ref('');
 
-const newTicket = ref({
+const tickets = ref(props.tickets);
+const userRole = props.userRole;
+
+interface NewTicket {
+    subject: string;
+    user?: string;
+    priority: string;
+    category: string;
+    description: string;
+    participants: string[];
+}
+
+const newTicket = ref<NewTicket>({
     subject: '',
     user: '',
     priority: 'medium',
     category: 'technical',
     description: '',
-    participants: [] as string[]
+    participants: [],
 });
 
-const props = defineProps<{ tickets: any, userRole: string }>();
-const userRole = props.userRole;
-const tickets = ref(props.tickets);
+const newTicketForm = useForm({
+    subject: '',
+    user: '',
+    priority: 'medium',
+    category: 'technical',
+    description: '',
+    participants: [] as string[],
+});
 
 const filteredTickets = computed(() => {
-    if (!tickets.value || !tickets.value.data) return [];
-    return tickets.value.data.filter(ticket => {
+    return tickets.value.filter((ticket) => {
         const matchesStatus = !selectedStatus.value || ticket.status === selectedStatus.value;
         const matchesPriority = !selectedPriority.value || ticket.priority === selectedPriority.value;
         const matchesCategory = !selectedCategory.value || ticket.category === selectedCategory.value;
         const matchesSearch = !searchTerm.value ||
             ticket.subject.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-            ticket.username.toLowerCase().includes(searchTerm.value.toLowerCase());
-
+            (ticket.user?.name?.toLowerCase().includes(searchTerm.value.toLowerCase()));
         return matchesStatus && matchesPriority && matchesCategory && matchesSearch;
     });
 });
 
-const openCount = computed(() => filteredTickets.value.filter(t => t.status === 'open').length);
-const inProgressCount = computed(() => filteredTickets.value.filter(t => t.status === 'in_progress').length);
-const resolvedCount = computed(() => filteredTickets.value.filter(t => t.status === 'resolved').length);
+const openCount = computed(() => filteredTickets.value.filter((t) => t.status === 'open').length);
+const inProgressCount = computed(() => filteredTickets.value.filter((t) => t.status === 'in_progress').length);
+const resolvedCount = computed(() => filteredTickets.value.filter((t) => t.status === 'resolved').length);
 const totalCount = computed(() => filteredTickets.value.length);
 
 const getStatusClass = (status: string) => {
-    const classes = {
-        'open': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-        'in_progress': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-        'resolved': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-        'closed': 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+    const classes: Record<string, string> = {
+        open: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+        in_progress: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+        resolved: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+        closed: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
     };
     return classes[status] || classes.open;
 };
 
 const getStatusText = (status: string) => {
-    const texts = {
-        'open': 'Otevřené',
-        'in_progress': 'V řešení',
-        'resolved': 'Vyřešené',
-        'closed': 'Uzavřené'
+    const texts: Record<string, string> = {
+        open: 'Otevřené',
+        in_progress: 'V řešení',
+        resolved: 'Vyřešené',
+        closed: 'Uzavřené',
     };
     return texts[status] || 'Neznámé';
 };
 
 const getPriorityClass = (priority: string) => {
-    const classes = {
-        'low': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-        'medium': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-        'high': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-        'urgent': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+    const classes: Record<string, string> = {
+        low: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+        medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+        high: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+        urgent: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     };
     return classes[priority] || classes.medium;
 };
 
 const getPriorityText = (priority: string) => {
-    const texts = {
-        'low': 'Nízká',
-        'medium': 'Střední',
-        'high': 'Vysoká',
-        'urgent': 'Urgentní'
+    const texts: Record<string, string> = {
+        low: 'Nízká',
+        medium: 'Střední',
+        high: 'Vysoká',
+        urgent: 'Urgentní',
     };
     return texts[priority] || 'Střední';
 };
 
 const getCategoryText = (category: string) => {
-    const texts = {
-        'technical': 'Technické',
-        'gameplay': 'Gameplay',
-        'player_report': 'Nahlášení hráče',
-        'other': 'Ostatní'
+    const texts: Record<string, string> = {
+        technical: 'Technické',
+        gameplay: 'Gameplay',
+        player_report: 'Nahlášení hráče',
+        other: 'Ostatní',
     };
     return texts[category] || 'Ostatní';
-};
-
-const viewTicket = (ticket: any) => {
-    // Implement view ticket logic
-    console.log('Viewing ticket:', ticket);
-};
-
-const editTicket = (ticket: any) => {
-    // Implement edit ticket logic
-    console.log('Editing ticket:', ticket);
-};
-
-const createTicket = async () => {
-    try {
-        const payload: any = {
-            subject: newTicket.value.subject,
-            priority: newTicket.value.priority,
-            category: newTicket.value.category,
-            description: newTicket.value.description,
-            participants: newTicket.value.participants.filter(p => p.trim()),
-        };
-        if (userRole === 'admin') {
-            payload.user = newTicket.value.user;
-        }
-        await axios.post('/tickets', payload);
-        showCreateModal.value = false;
-        newTicket.value = {
-            subject: '',
-            user: '',
-            priority: 'medium',
-            category: 'technical',
-            description: '',
-            participants: []
-        };
-        window.location.reload();
-    } catch (e) {
-        alert('Nepodařilo se vytvořit ticket.');
-    }
 };
 
 const selectedTickets = ref<number[]>([]);
@@ -537,38 +479,34 @@ const selectAll = ref(false);
 
 const toggleSelectAll = () => {
     if (selectAll.value) {
-        selectedTickets.value = filteredTickets.value.map(t => t.id);
+        selectedTickets.value = filteredTickets.value.map((t) => t.id);
     } else {
         selectedTickets.value = [];
     }
 };
 
-const massComplete = async () => {
+const massComplete = () => {
     actionToConfirm.value = 'complete';
     showConfirmModal.value = true;
 };
 
-const massDelete = async () => {
+const massDelete = () => {
     actionToConfirm.value = 'delete';
     showConfirmModal.value = true;
 };
 
 const confirmAction = async () => {
-    if (!actionToConfirm.value) return;
-
-    try {
-        if (actionToConfirm.value === 'complete') {
-            await axios.post('/tickets/mass-complete', { ids: selectedTickets.value });
-        } else if (actionToConfirm.value === 'delete') {
-            await axios.post('/tickets/mass-delete', { ids: selectedTickets.value });
-        }
-        window.location.reload();
-    } catch (e) {
-        alert(`Nepodařilo se ${actionToConfirm.value === 'complete' ? 'vyřešit' : 'smazat'} vybrané tickety.`);
-    } finally {
-        showConfirmModal.value = false;
-        actionToConfirm.value = null;
+    if (actionToConfirm.value === 'complete') {
+        await axios.post('/admin/tickets/mass-complete', { ids: selectedTickets.value });
+    } else if (actionToConfirm.value === 'delete') {
+        await axios.post('/admin/tickets/mass-delete', { ids: selectedTickets.value });
     }
+    showConfirmModal.value = false;
+    actionToConfirm.value = null;
+    selectedTickets.value = [];
+    selectAll.value = false;
+    router.reload({ only: ['tickets'] });
+    window.location.reload();
 };
 
 const cancelAction = () => {
@@ -579,12 +517,31 @@ const cancelAction = () => {
 const addParticipantField = () => {
     newTicket.value.participants.push('');
 };
-
 const removeParticipantField = (index: number) => {
     newTicket.value.participants.splice(index, 1);
 };
 
-onMounted(() => {
-    // Load tickets data if needed
-});
+const createTicket = () => {
+    if (userRole === 'admin') {
+        newTicketForm.subject = newTicket.value.subject;
+        newTicketForm.user = newTicket.value.user || '';
+        newTicketForm.priority = newTicket.value.priority;
+        newTicketForm.category = newTicket.value.category;
+        newTicketForm.description = newTicket.value.description;
+        newTicketForm.participants = newTicket.value.participants;
+    } else {
+        newTicketForm.subject = newTicket.value.subject;
+        newTicketForm.priority = newTicket.value.priority;
+        newTicketForm.category = newTicket.value.category;
+        newTicketForm.description = newTicket.value.description;
+    }
+    newTicketForm.post(route('admin.tickets.store'), {
+        onSuccess: () => {
+            showCreateModal.value = false;
+            newTicketForm.reset();
+            newTicket.value = { subject: '', user: '', priority: 'medium', category: 'technical', description: '', participants: [] };
+            router.reload({ only: ['tickets'] });
+        },
+    });
+};
 </script>

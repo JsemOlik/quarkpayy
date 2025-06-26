@@ -3,7 +3,7 @@ import UserInfo from '@/components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import type { User } from '@/types';
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings, LockKeyhole } from 'lucide-vue-next';
+import { LogOut, Settings, LockKeyhole, Ticket } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 interface Props {
@@ -37,6 +37,12 @@ const canAccessAdminPanel = computed(() => {
                 </Link>
             </DropdownMenuItem>
         </template>
+        <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="route('profile.edit')" prefetch as="button">
+                <Ticket class="mr-2 h-4 w-4" />
+                Tickets
+            </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem :as-child="true">
             <Link class="block w-full" :href="route('profile.edit')" prefetch as="button">
                 <Settings class="mr-2 h-4 w-4" />
