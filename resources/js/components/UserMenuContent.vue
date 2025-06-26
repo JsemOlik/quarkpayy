@@ -29,32 +29,34 @@ const canAccessAdminPanel = computed(() => {
     </DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
-        <template v-if="canAccessAdminPanel">
-            <DropdownMenuItem :as-child="true">
-                <Link class="block w-full" :href="route('admin.dashboard')" prefetch as="button">
-                    <LockKeyhole class="mr-2 h-4 w-4" />
-                    Admin
-                </Link>
-            </DropdownMenuItem>
-        </template>
+
         <DropdownMenuItem :as-child="true">
             <Link class="block w-full" :href="route('profile.edit')" prefetch as="button">
-                <Ticket class="mr-2 h-4 w-4" />
-                Tickets
+            <Ticket class="mr-2 h-4 w-4" />
+            Tickets
             </Link>
         </DropdownMenuItem>
         <DropdownMenuItem :as-child="true">
             <Link class="block w-full" :href="route('profile.edit')" prefetch as="button">
-                <Settings class="mr-2 h-4 w-4" />
-                Account
+            <Settings class="mr-2 h-4 w-4" />
+            Account
             </Link>
         </DropdownMenuItem>
     </DropdownMenuGroup>
-    <DropdownMenuSeparator />
+    <template v-if="canAccessAdminPanel">
+        <DropdownMenuSeparator />
+        <DropdownMenuItem :as-child="true">
+            <Link class="block w-full" :href="route('admin.dashboard')" prefetch as="button">
+            <LockKeyhole class="mr-2 h-4 w-4" />
+            Admin
+            </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+    </template>
     <DropdownMenuItem :as-child="true">
         <Link class="block w-full" method="post" :href="route('logout')" @click="handleLogout" as="button">
-            <LogOut class="mr-2 h-4 w-4" />
-            Log out
+        <LogOut class="mr-2 h-4 w-4" />
+        Log out
         </Link>
     </DropdownMenuItem>
 </template>

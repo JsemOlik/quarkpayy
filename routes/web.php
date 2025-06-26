@@ -46,9 +46,6 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
         $user->save();
         return redirect()->route('admin.users');
     })->name('admin.users.update');
-    Route::get('/invoices', function () {
-        return Inertia::render('admin/administration/Invoices');
-    })->name('admin.invoices');
     Route::get('/tickets', function () {
         $tickets = Ticket::with('user')->latest()->get();
         $userRole = auth()->user()->role;
@@ -83,6 +80,11 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::post('/tickets/mass-complete', [\App\Http\Controllers\TicketController::class, 'massComplete'])->name('admin.tickets.massComplete');
     Route::post('/tickets/mass-delete', [\App\Http\Controllers\TicketController::class, 'massDelete'])->name('admin.tickets.massDelete');
 });
+
+// Add /invoices route for authenticated users (not just admins)
+Route::middleware(['auth'])->get('/invoices', function () {
+    return Inertia::render('Invoices');
+})->name('invoices');
 
 // Ticket detail, reply, and participant management routes (for both users and admins)
 Route::middleware(['auth', 'verified'])->group(function () {

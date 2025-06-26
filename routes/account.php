@@ -18,8 +18,4 @@ Route::middleware('auth')->group(function () {
     Route::get('account/appearance', function () {
         return Inertia::render('account/Appearance');
     })->name('appearance');
-
-    Route::get('account/invoices', function () {
-        return Inertia::render('account/Invoices');
-    })->name('invoices');
 });

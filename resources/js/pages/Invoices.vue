@@ -11,20 +11,15 @@ import SettingsLayout from '@/layouts/account/Layout.vue';
 const breadcrumbItems: BreadcrumbItem[] = [
     {
         title: 'Invoice settings',
-        href: '/account/invoices',
+        href: '/invoices',
     },
 ];
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Invoice settings" />
-
-        <SettingsLayout>
-            <div class="space-y-6">
-                <HeadingSmall title="Appearance settings" description="Update your account's appearance settings" />
-                <AppearanceTabs />
-            </div>
-        </SettingsLayout>
+        <Head title="Invoice settings" /><div class="w-full h-full p-12">
+            <h1>skibidi</h1>
+        </div>
     </AppLayout>
 </template>

@@ -53,9 +53,16 @@ const activeItemStyles = computed(
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Home',
         href: '/dashboard',
-        icon: LayoutGrid,
+    },
+    {
+        title: 'Services',
+        href: '/services',
+    },
+    {
+        title: 'Invoices',
+        href: '/invoices',
     },
 ];
 
@@ -132,12 +139,12 @@ const rightNavItems: NavItem[] = [
                 </Link>
 
                 <!-- Desktop Menu -->
-                <div class="hidden h-full lg:flex lg:flex-1">
-                    <NavigationMenu class="ml-10 flex h-full items-stretch">
+                <div class="hidden h-full lg:block absolute left-1/2 top-0 h-full z-10" style="transform: translateX(-50%);">
+                    <NavigationMenu class="flex h-full items-stretch">
                         <NavigationMenuList class="flex h-full items-stretch space-x-2">
                             <NavigationMenuItem v-for="(item, index) in mainNavItems" :key="index" class="relative flex h-full items-center">
                                 <Link
-                                    :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']"
+                                    :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'border border-transparent hover:border-neutral-300 !h-7 !py-1 cursor-pointer !px-3 rounded-xl']"
                                     :href="item.href"
                                 >
                                     <component v-if="item.icon" :is="item.icon" class="mr-2 h-4 w-4" />
