@@ -18,4 +18,12 @@ Route::middleware('auth')->group(function () {
     Route::get('account/appearance', function () {
         return Inertia::render('account/Appearance');
     })->name('appearance');
+
+    Route::get('account/credits', function () {
+        return Inertia::render('account/Credits');
+    })->name('credits');
+
+    Route::get('account/affiliate', function () {
+        return Inertia::render('account/Affiliate');
+    })->name('affiliate');
 });

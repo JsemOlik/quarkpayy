@@ -90,7 +90,7 @@ import axios from 'axios';
 
 const breadcrumbs = [
     { title: 'Dashboard', href: '/dashboard' },
-    { title: 'Moje Tickety', href: '/tickets/create' },
+    { title: 'Tickets', href: '/tickets/create' },
 ];
 
 const showCreateModal = ref(false);

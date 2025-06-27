@@ -53,7 +53,7 @@ const activeItemStyles = computed(
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Home',
+        title: 'Dashboard',
         href: '/dashboard',
     },
     {
@@ -141,7 +141,7 @@ const rightNavItems: NavItem[] = [
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:block absolute left-1/2 top-0 h-full z-10" style="transform: translateX(-50%);">
                     <NavigationMenu class="flex h-full items-stretch">
-                        <NavigationMenuList class="flex h-full items-stretch space-x-2">
+                        <NavigationMenuList class="flex h-full items-stretch space-x-3">
                             <NavigationMenuItem v-for="(item, index) in mainNavItems" :key="index" class="relative flex h-full items-center">
                                 <Link
                                     :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'border border-transparent hover:border-neutral-300 !h-7 !py-1 cursor-pointer !px-3 rounded-xl']"
@@ -209,8 +209,8 @@ const rightNavItems: NavItem[] = [
             </div>
         </div>
 
-        <div v-if="props.breadcrumbs.length > 1" class="flex w-full border-b border-sidebar-border/70">
-            <div class="mx-auto flex h-12 w-full items-center justify-start px-4 text-neutral-500 md:max-w-7xl">
+        <div v-if="props.breadcrumbs.length > 1" class="border-0 border-sidebar-border/70">
+            <div class="mx-auto flex h-12 items-center justify-start px-4 text-neutral-500 max-w-[1152px]">
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </div>
         </div>

@@ -86,6 +86,26 @@ Route::middleware(['auth'])->get('/invoices', function () {
     return Inertia::render('Invoices');
 })->name('invoices');
 
+// User invoice detail route
+Route::middleware(['auth'])->get('/invoices/{id}', function ($id) {
+    // Dummy data for now
+    $invoice = [
+        'id' => $id,
+        'number' => 'INV-' . str_pad($id, 5, '0', STR_PAD_LEFT),
+        'date' => now()->toDateString(),
+        'amount' => '123.45',
+        'status' => 'Paid',
+        'items' => [
+            ['description' => 'Service A', 'qty' => 1, 'price' => '100.00'],
+            ['description' => 'Service B', 'qty' => 2, 'price' => '11.72'],
+        ],
+        'user' => auth()->user(),
+    ];
+    return Inertia::render('InvoiceDetail', [
+        'invoice' => $invoice
+    ]);
+})->name('invoices.detail');
+
 // Ticket detail, reply, and participant management routes (for both users and admins)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin/tickets/{id}', [\App\Http\Controllers\TicketController::class, 'show'])->name('admin.tickets.show');
